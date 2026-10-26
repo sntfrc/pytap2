@@ -1,27 +1,6 @@
 ``pytap2`` - Cross-platform TUN interface for Python
 ====================================================
 
-.. image:: https://github.com/johnthagen/pytap2/workflows/python/badge.svg
-    :target: https://github.com/johnthagen/pytap2/actions
-
-.. image:: https://codeclimate.com/github/johnthagen/pytap2/badges/gpa.svg
-   :target: https://codeclimate.com/github/johnthagen/pytap2
-
-.. image:: https://codeclimate.com/github/johnthagen/pytap2/badges/issue_count.svg
-   :target: https://codeclimate.com/github/johnthagen/pytap2
-
-.. image:: https://codecov.io/github/johnthagen/pytap2/coverage.svg
-    :target: https://codecov.io/github/johnthagen/pytap2
-
-.. image:: https://img.shields.io/pypi/v/pytap2.svg
-    :target: https://pypi.python.org/pypi/pytap2
-
-.. image:: https://img.shields.io/pypi/status/pytap2.svg
-    :target: https://pypi.python.org/pypi/pytap2
-
-.. image:: https://img.shields.io/pypi/pyversions/pytap2.svg
-    :target: https://pypi.python.org/pypi/pytap2/
-
 This is a cross-platform fork of the original
 `johnthagen/pytap2 <https://github.com/johnthagen/pytap2>`_. It provides a
 packet-oriented interface to TUN devices on Linux, macOS, and Windows.

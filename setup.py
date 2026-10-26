@@ -8,7 +8,7 @@ setuptools.setup(
     description=" Cross-platform version of pytap2",
     long_description=open("README.rst").read(),
     keywords=["pytap", "tun", "tap", "networking"],
-    author="John Hagen, Federico Santandrea",
+    author="Federico Santandrea",
     author_email="federico@santandrea.net",
     url="https://github.com/sntfrc/pytap2",
     packages=setuptools.find_packages("src"),
