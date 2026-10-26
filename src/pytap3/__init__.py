@@ -469,7 +469,7 @@ class TapDevice:
                 args.extend(["mtu", str(target_mtu)])
             _run(*args)
             if ip:
-                _run("route", "-n", "add", "-net", str(network), ip)
+                _run("route", "-n", "add", "-net", str(network), "-interface", self.name)
         else:
             if ip:
                 if not netmask:
