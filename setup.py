@@ -3,17 +3,17 @@
 import setuptools
 
 setuptools.setup(
-    name="pytap2",
-    version="2.4.0",
-    description=" Cross-platform version of pytap2",
+    name="pytap3",
+    version="3.0.0",
+    description="Cross-platform tunnel interface for Python",
     long_description=open("README.rst").read(),
     keywords=["pytap", "tun", "tap", "networking"],
     author="Federico Santandrea",
     author_email="federico@santandrea.net",
-    url="https://github.com/sntfrc/pytap2",
+    url="https://github.com/sntfrc/pytap3",
     packages=setuptools.find_packages("src"),
     package_dir={"": "src"},
-    package_data={"pytap2": ["py.typed"]},
+    package_data={"pytap3": ["py.typed"]},
     include_package_data=True,
     python_requires=">=3.8",
     zip_safe=False,
