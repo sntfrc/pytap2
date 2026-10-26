@@ -95,6 +95,19 @@ class WintunBuildTestCase(unittest.TestCase):
                                 outputs,
                             )
 
+    def test_non_windows_build_does_not_download_wintun(self) -> None:
+        command = pytap3_build.WintunBuildPy(Distribution({"packages": []}))
+        command.ensure_finalized()
+        with tempfile.TemporaryDirectory() as directory:
+            command.build_lib = directory
+            for platform_name in ("linux", "darwin"):
+                with self.subTest(platform=platform_name):
+                    with patch("pytap3_build.sys.platform", platform_name):
+                        with patch("pytap3_build.build_py.run"):
+                            with patch("pytap3_build.download_wintun") as download:
+                                command.run()
+                                download.assert_not_called()
+
     def test_wheel_uses_platform_tag_without_python_abi_tag(self) -> None:
         command = pytap3_build.PlatformWheel(Distribution())
         with patch("pytap3_build.bdist_wheel.finalize_options"):
