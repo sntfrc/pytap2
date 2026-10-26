@@ -109,6 +109,20 @@ port is 0 and MTU is 256. Use ``--host``, ``--port``, ``--kiss-port``, and
 list. Creating the interface and routing its subnet may require root or
 administrator privileges.
 
+To limit packet-radio traffic, ``kisstun`` filters outgoing packets by default,
+forwarding IPv4 unicast and broadcast only. It drops IPv6, IPv4 multicast, and
+UDP discovery traffic on ports 67, 68, 137, 138, 1900, 3702, 5353, and 5355
+(DHCP, NetBIOS, SSDP, WS-Discovery, mDNS, and LLMNR), including broadcasts
+using those ports. Incoming KISS packets are passed to the TUN interface
+without this filter. Use ``--no-filter`` to disable filtering of outgoing
+packets.
+
+Please note that TCP is a very chatty protocol and is not ideal for packet radio.
+Applications using UDP or ICMP are more suitable for this type of networking.
+If you are using TCP, consider tweaking the stack parameters to be more
+bandwidth-efficient, such as disabling Nagle's algorithm and reducing
+the TCP window size. 
+
 The command can also be run as a Python module:
 
 .. code:: shell-session

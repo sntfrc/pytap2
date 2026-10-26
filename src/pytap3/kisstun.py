@@ -30,6 +30,7 @@ _TFEND = 0xDC
 _TFESC = 0xDD
 _MAX_KISS_FRAME_SIZE = 65536
 _DIREWOLF_STARTUP_TIMEOUT = 30
+_DISCOVERY_UDP_PORTS = frozenset((67, 68, 137, 138, 1900, 3702, 5353, 5355))
 
 
 class _KISSDecoder:
@@ -89,7 +90,54 @@ def _encode_kiss_frame(packet: bytes, port: int) -> bytes:
     return bytes((_FEND,)) + bytes(frame) + bytes((_FEND,))
 
 
-def _forward_packets(device: _PacketDevice, connection: socket.socket, port: int) -> None:
+def _is_forwardable_ipv4_packet(
+    packet: bytes, network: ipaddress.IPv4Network
+) -> bool:
+    if len(packet) < 20 or packet[0] >> 4 != 4:
+        return False
+
+    header_length = (packet[0] & 0x0F) * 4
+    if header_length < 20 or len(packet) < header_length:
+        return False
+
+    total_length = int.from_bytes(packet[2:4], "big")
+    if total_length < header_length or total_length > len(packet):
+        return False
+
+    destination = ipaddress.IPv4Address(packet[16:20])
+    if destination.is_multicast or destination.is_unspecified:
+        return False
+
+    if packet[9] == socket.IPPROTO_UDP and total_length >= header_length + 8:
+        fragment_offset = int.from_bytes(packet[6:8], "big") & 0x1FFF
+        if fragment_offset == 0:
+            source_port = int.from_bytes(packet[header_length : header_length + 2], "big")
+            destination_port = int.from_bytes(packet[header_length + 2 : header_length + 4], "big")
+            if (
+                source_port in _DISCOVERY_UDP_PORTS
+                or destination_port in _DISCOVERY_UDP_PORTS
+            ):
+                return False
+
+    if (
+        destination == ipaddress.IPv4Address("255.255.255.255")
+        or destination == network.broadcast_address
+    ):
+        return True
+    return not (
+        destination.is_reserved
+        or destination.is_loopback
+        or destination.is_link_local
+    )
+
+
+def _forward_packets(
+    device: _PacketDevice,
+    connection: socket.socket,
+    port: int,
+    network: ipaddress.IPv4Network,
+    filter_outgoing: bool = True,
+) -> None:
     stop = threading.Event()
     sender_errors: queue.Queue[OSError] = queue.Queue()
 
@@ -97,7 +145,9 @@ def _forward_packets(device: _PacketDevice, connection: socket.socket, port: int
         try:
             while not stop.is_set():
                 packet = device.read()
-                if packet:
+                if packet and (
+                    not filter_outgoing or _is_forwardable_ipv4_packet(packet, network)
+                ):
                     connection.sendall(_encode_kiss_frame(packet, port))
         except OSError as exc:
             if not stop.is_set():
@@ -257,6 +307,13 @@ def _build_parser() -> argparse.ArgumentParser:
         help="launch Dire Wolf and wait for its TCP KISS listener",
     )
     parser.add_argument(
+        "--no-filter",
+        dest="filter_outgoing",
+        action="store_false",
+        default=True,
+        help="disable outgoing IPv4 packet filtering (enabled by default)",
+    )
+    parser.add_argument(
         "--mtu",
         type=int,
         default=256,
@@ -286,7 +343,13 @@ def main(argv: Optional[List[str]] = None) -> None:
                     f"{args.host}:{args.port} (KISS port {args.kiss_port})",
                     flush=True,
                 )
-                _forward_packets(device, connection, args.kiss_port)
+                _forward_packets(
+                    device,
+                    connection,
+                    args.kiss_port,
+                    args.address.network,
+                    args.filter_outgoing,
+                )
 
 
 if __name__ == "__main__":
