@@ -1,5 +1,5 @@
-``pytap2`` - Object oriented interface to Linux Tun/Tap devices
-===============================================================
+``pytap2`` - Cross-platform TUN interface for Python
+====================================================
 
 .. image:: https://github.com/johnthagen/pytap2/workflows/python/badge.svg
     :target: https://github.com/johnthagen/pytap2/actions
@@ -22,24 +22,38 @@
 .. image:: https://img.shields.io/pypi/pyversions/pytap2.svg
     :target: https://pypi.python.org/pypi/pytap2/
 
-Fork of `PyTap <https://pypi.python.org/pypi/PyTap/>`_ that supports Python 3.
+This is a cross-platform fork of the original
+`johnthagen/pytap2 <https://github.com/johnthagen/pytap2>`_. It provides a
+packet-oriented interface to TUN devices on Linux, macOS, and Windows.
 
 Requirements
 ------------
 
-The ``ifconfig`` command line utility must be installed for ``pytap2`` to operate.
+Requirements depend on your operating system:
 
-To install ``ifconfig`` on Debian/Ubuntu:
+* **Linux:** Install ``net-tools`` to provide the ``ifconfig`` command.
 
-.. code:: shell-session
+  On Debian/Ubuntu:
 
-    $ sudo apt install net-tools
+  .. code:: shell-session
 
-To install ``ifconfig`` on RHEL/Rocky Linux/Fedora:
+      $ sudo apt install net-tools
 
-.. code:: shell-session
+  On RHEL/Rocky Linux/Fedora:
 
-    $ sudo yum install net-tools
+  .. code:: shell-session
+
+      $ sudo yum install net-tools
+
+* **macOS:** No additional packages are required; ``ifconfig`` is included
+  with macOS.
+
+* **Windows:** ``wintun.dll`` is required. Download the signed DLL matching
+  your system architecture from `Wintun <https://www.wintun.net/>`_ and make it
+  available beside the installed ``pytap2`` module or on ``PATH``.
+
+Creating and configuring a TUN device may require administrator or root
+privileges.
 
 Installation
 ------------
@@ -84,71 +98,7 @@ to `select() <https://docs.python.org/library/select.html#select.select>`_.
 Releases
 --------
 
-Unreleased
-^^^^^^^^^^
-
-- Support Python 3.12.
-- Automatically try the next available macOS utun interface when a unit is busy.
-- On macOS, ``name`` is a preferred utun interface; check ``device.name`` for the
-  actual assigned interface.
-
-2.3.0 - 2023-04-28
+2.4.0 - 2024-06-05
 ^^^^^^^^^^^^^^^^^^
 
-- Drop Python 3.7 and support Python 3.11
-- Support Mypy type checking for users
-
-2.2.0 - 2021-11-06
-^^^^^^^^^^^^^^^^^^
-
-- Drop Python 3.6 and support Python 3.10.
-- Document dependency on ``ifconfig``
-
-2.1.0 - 2020-12-30
-^^^^^^^^^^^^^^^^^^
-
-- Drop Python 3.5 and support Python 3.9.
-- Switch to GitHub Actions for CI.
-
-2.0.0 - 2020-03-29
-^^^^^^^^^^^^^^^^^^
-
-- Drop Python 2.7.
-
-1.6.0 - 2019-12-15
-^^^^^^^^^^^^^^^^^^
-
-- Drop Python 3.4 and support Python 3.8.
-- Include license file.
-
-1.5.0 - 2018-07-09
-^^^^^^^^^^^^^^^^^^
-
-Support Python 3.7.
-
-1.4.0 - 2017-10-24
-^^^^^^^^^^^^^^^^^^
-
-Allow disabling packet information header (``IFF_NO_PI``) and default ``read()`` to read entire
-MTU worth of data plus the packet information header if present.
-
-1.3.0 - 2017-07-31
-^^^^^^^^^^^^^^^^^^
-
-Add ``fileno()`` method to support ``select()`` calls.
-
-1.2.0 - 2017-06-19
-^^^^^^^^^^^^^^^^^^
-
-Context manager support added.
-
-1.1.0 - 2017-06-17
-^^^^^^^^^^^^^^^^^^
-
-Allow ``read()`` to be called with a specific number of bytes to read.
-
-
-1.0.0 - 2017-06-16
-^^^^^^^^^^^^^^^^^^
-
-Initial release that supports Python 2 and 3.
+- Windows, Linux and macOS support!
