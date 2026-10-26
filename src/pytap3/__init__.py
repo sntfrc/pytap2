@@ -231,12 +231,12 @@ class _WindowsBackend:
             raise ValueError("Wintun supports layer-3 TUN devices only")
         if not hasattr(ctypes, "WinDLL"):
             raise TapDeviceError("Wintun is available only on Windows")
-        self.name = name or "pytap2"
+        self.name = name or "pytap3"
         self._dll = self._load_dll()
         self._bind_api()
         adapter_type = "Wintun"
         adapter_guid = _GUID.from_uuid(
-            uuid.uuid5(uuid.NAMESPACE_DNS, "pytap2:" + self.name)
+            uuid.uuid5(uuid.NAMESPACE_DNS, "pytap3:" + self.name)
         )
         self.adapter = self._create_adapter(
             self.name, adapter_type, ctypes.byref(adapter_guid)

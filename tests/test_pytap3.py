@@ -3,7 +3,7 @@ import os
 import unittest
 from unittest.mock import Mock, patch
 
-from pytap2 import IFF_TUN, TapDevice, _MacOSBackend
+from pytap3 import IFF_TUN, TapDevice, _MacOSBackend
 
 
 class TestCase(unittest.TestCase):
@@ -13,8 +13,8 @@ class TestCase(unittest.TestCase):
 
 @unittest.skipIf(os.name == "nt", "the macOS backend requires fcntl")
 class MacOSBackendTestCase(unittest.TestCase):
-    @patch("pytap2.fcntl.ioctl")
-    @patch("pytap2.socket.socket")
+    @patch("pytap3.fcntl.ioctl")
+    @patch("pytap3.socket.socket")
     def test_automatic_name_uses_next_available_unit(
         self, socket_factory: Mock, _ioctl: Mock
     ) -> None:
@@ -32,8 +32,8 @@ class MacOSBackendTestCase(unittest.TestCase):
         busy_socket.close.assert_called_once_with()
         self.assertIs(backend.sock, available_socket)
 
-    @patch("pytap2.fcntl.ioctl")
-    @patch("pytap2.socket.socket")
+    @patch("pytap3.fcntl.ioctl")
+    @patch("pytap3.socket.socket")
     def test_requested_name_uses_exact_unit(
         self, socket_factory: Mock, _ioctl: Mock
     ) -> None:
@@ -47,8 +47,8 @@ class MacOSBackendTestCase(unittest.TestCase):
         requested_socket.connect.assert_called_once_with((0, 5))
         self.assertIs(backend.sock, requested_socket)
 
-    @patch("pytap2.fcntl.ioctl")
-    @patch("pytap2.socket.socket")
+    @patch("pytap3.fcntl.ioctl")
+    @patch("pytap3.socket.socket")
     def test_requested_busy_unit_retries_and_uses_assigned_name(
         self, socket_factory: Mock, _ioctl: Mock
     ) -> None:

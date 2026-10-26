@@ -29,7 +29,7 @@ Requirements depend on your operating system:
 
 * **Windows:** ``wintun.dll`` is required. Download the signed DLL matching
   your system architecture from `Wintun <https://www.wintun.net/>`_ and make it
-  available beside the installed ``pytap2`` module or on ``PATH``.
+  available beside the installed ``pytap3`` module or on ``PATH``.
 
 Creating and configuring a TUN device may require administrator or root
 privileges.
