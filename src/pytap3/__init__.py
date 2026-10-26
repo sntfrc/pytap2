@@ -438,7 +438,8 @@ class TapDevice:
         For macOS, ``peer`` defaults to the first usable address in the given
         subnet other than ``ip``. This supplies utun's required point-to-point
         destination address. It is a deterministic placeholder, not a probe of
-        address use on the network.
+        address use on the network. The subnet route implied by ``netmask`` is
+        also installed through the utun interface.
         """
         if address is not None:
           if ip is not None and ip != address:
@@ -459,6 +460,7 @@ class TapDevice:
                 if not netmask:
                     raise ValueError("netmask is required when configuring an IP")
                 chosen_peer = peer or self._mac_peer(ip, netmask)
+                network = ipaddress.ip_network(f"{ip}/{netmask}", strict=False)
                 args = ["ifconfig", self.name, "inet", ip, chosen_peer,
                         "netmask", netmask]
             else:
@@ -466,6 +468,11 @@ class TapDevice:
             if target_mtu:
                 args.extend(["mtu", str(target_mtu)])
             _run(*args)
+            if ip:
+                _run(
+                    "route", "-n", "add", "-net", str(network),
+                    "-interface", self.name,
+                )
         else:
             if ip:
                 if not netmask:

@@ -78,6 +78,10 @@ The ``fileno()`` method is defined, so that the device object can be passed dire
 to `select() <https://docs.python.org/library/select.html#select.select>`_. This might
 not work on Windows, as the underlying Wintun driver does not support this.
 
+On macOS, configuring an IP address with ``ifconfig(ip=..., netmask=...)`` also
+adds a route for that subnet through the ``utun`` interface. Routes that conflict
+with an existing route may require administrator privileges or manual adjustment.
+
 You can make pytap3 a drop-in replacement for pytap2 by just importing it like this:
  ``import pytap3 as pytap2``
 

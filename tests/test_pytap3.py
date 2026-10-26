@@ -1,7 +1,7 @@
 import errno
 import os
 import unittest
-from unittest.mock import Mock, patch
+from unittest.mock import Mock, call, patch
 
 from pytap3 import IFF_TUN, TapDevice, _MacOSBackend
 
@@ -65,3 +65,39 @@ class MacOSBackendTestCase(unittest.TestCase):
         available_socket.connect.assert_called_once_with((0, 6))
         busy_socket.close.assert_called_once_with()
         self.assertIs(backend.sock, available_socket)
+
+
+class MacOSRouteTestCase(unittest.TestCase):
+    @patch("pytap3._run")
+    def test_ifconfig_adds_route_for_configured_subnet(self, run: Mock) -> None:
+        device = TapDevice.__new__(TapDevice)
+        device._platform = "Darwin"
+        device.name = "utun3"
+        device.mtu = 1500
+
+        device.ifconfig(ip="10.0.13.7", netmask="255.255.240.0")
+
+        self.assertEqual(
+            run.call_args_list,
+            [
+                call(
+                    "ifconfig", "utun3", "inet", "10.0.13.7", "10.0.0.1",
+                    "netmask", "255.255.240.0", "mtu", "1500",
+                ),
+                call(
+                    "route", "-n", "add", "-net", "10.0.0.0/20",
+                    "-interface", "utun3",
+                ),
+            ],
+        )
+
+    @patch("pytap3._run")
+    def test_ifconfig_without_address_does_not_add_route(self, run: Mock) -> None:
+        device = TapDevice.__new__(TapDevice)
+        device._platform = "Darwin"
+        device.name = "utun3"
+        device.mtu = 1500
+
+        device.ifconfig(mtu=1400)
+
+        run.assert_called_once_with("ifconfig", "utun3", "mtu", "1400")
