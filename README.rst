@@ -27,9 +27,12 @@ Requirements depend on your operating system:
 * **macOS:** No additional packages are required; ``ifconfig`` is included
   with macOS.
 
-* **Windows:** ``wintun.dll`` is required. Download the signed DLL matching
-  your system architecture from `Wintun <https://www.wintun.net/>`_ and make it
-  available beside the installed ``pytap3`` module or on ``PATH``.
+* **Windows:** ``wintun.dll`` is required. When building/installing from source
+  on Windows, the package downloads the signed Wintun 0.14.1 archive from
+  `Wintun <https://www.wintun.net/>`_, verifies its SHA-256 checksum, and bundles
+  the DLL matching the Python platform. This requires network access during
+  installation. Wheels are platform-tagged; build Windows wheels on Windows to
+  include the DLL. Source distributions build locally on any supported OS.
 
 Creating and configuring a TUN device may require administrator or root
 privileges.
@@ -72,7 +75,11 @@ Or manually call ``up()`` and ``close()``.
     device.close()
 
 The ``fileno()`` method is defined, so that the device object can be passed directly
-to `select() <https://docs.python.org/library/select.html#select.select>`_.
+to `select() <https://docs.python.org/library/select.html#select.select>`_. This might
+not work on Windows, as the underlying Wintun driver does not support this.
+
+You can make pytap3 a drop-in replacement for pytap2 by just importing it like this:
+ ``import pytap3 as pytap2``
 
 Releases
 --------

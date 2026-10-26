@@ -1,6 +1,13 @@
 #!/usr/bin/env python3
 
+import os
+import sys
+
 import setuptools
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from pytap3_build import PlatformWheel, WintunBuildPy  # noqa: E402
 
 setuptools.setup(
     name="pytap3",
@@ -14,6 +21,7 @@ setuptools.setup(
     packages=setuptools.find_packages("src"),
     package_dir={"": "src"},
     package_data={"pytap3": ["py.typed"]},
+    cmdclass={"bdist_wheel": PlatformWheel, "build_py": WintunBuildPy},
     include_package_data=True,
     python_requires=">=3.8",
     zip_safe=False,

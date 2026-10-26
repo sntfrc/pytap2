@@ -1,5 +1,6 @@
+Copyright (c) 2026 Federico Santandrea
 Copyright (c) 2019-2023 John Hagen
-Cross-platform modifications (c) 2026 Federico Santandrea
+
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 and associated documentation files (the "Software"), to deal in the Software without restriction,
