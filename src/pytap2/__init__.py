@@ -102,12 +102,8 @@ class _MacOSBackend:
             info[4:4 + len(self._UTUN_CONTROL_NAME)] = self._UTUN_CONTROL_NAME
             fcntl.ioctl(self.sock.fileno(), self._CTLIOCGINFO, info, True)
             ctl_id = struct.unpack_from("=I", info)[0]
-            sockaddr = self._SOCKADDR_CTL.pack(
-                self._SOCKADDR_CTL.size, self._AF_SYSTEM, 0,
-                ctl_id, 0 if not name else int(name[4:]) + 1,
-                0, 0, 0, 0, 0
-            )
-            self.sock.connect(sockaddr)
+            unit = 0 if not name else int(name[4:]) + 1
+            self.sock.connect((ctl_id, unit))
             self.name = self.sock.getsockopt(
                 self._SYSPROTO_CONTROL, self._UTUN_OPT_IFNAME, 64
             ).split(b"\0", 1)[0].decode()
