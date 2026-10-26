@@ -93,7 +93,7 @@ Releases
 
 - Bugfix: use interface routing on macOS, like the test was expecting.
 
-3.0.0 - 2024-06-05
+3.0.0 - 2026-10-26
 ^^^^^^^^^^^^^^^^^^
 
 - Windows, Linux and macOS support!
