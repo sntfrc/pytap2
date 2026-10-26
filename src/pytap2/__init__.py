@@ -94,7 +94,7 @@ class _MacOSBackend:
         if mode != IFF_TUN:
             raise ValueError("macOS utun supports layer-3 TUN devices only")
         if name and not name.startswith("utun"):
-            raise ValueError("macOS interface names must be utunN")
+            name = "utun0"
         requested_unit = None if not name else int(name[4:]) + 1
         unit = 1 if requested_unit is None else requested_unit
         retried = False
