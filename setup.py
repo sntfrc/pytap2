@@ -4,13 +4,13 @@ import setuptools
 
 setuptools.setup(
     name="pytap2",
-    version="2.3.0",
-    description="Object-oriented wrapper around the Linux Tun/Tap device",
+    version="2.4.0",
+    description=" Cross-platform version of pytap2",
     long_description=open("README.rst").read(),
     keywords=["pytap", "tun", "tap", "networking"],
-    author="John Hagen",
-    author_email="johnthagen@gmail.com",
-    url="https://github.com/johnthagen/pytap2",
+    author="John Hagen, Federico Santandrea",
+    author_email="federico@santandrea.net",
+    url="https://github.com/sntfrc/pytap2",
     packages=setuptools.find_packages("src"),
     package_dir={"": "src"},
     package_data={"pytap2": ["py.typed"]},
