@@ -5,6 +5,13 @@ This is a cross-platform fork of the original
 `johnthagen/pytap2 <https://github.com/johnthagen/pytap2>`_. It provides a
 packet-oriented interface to TUN devices on Linux, macOS, and Windows.
 
+For amateur radio operators, it also includes a handy command-line utility,
+``kisstun``, which automatically creates and configures a TUN interface from
+an IPv4 address and prefix, then bridges IP packets between that interface
+and a TCP-connected KISS TNC such as Dire Wolf. Instant, cross-platform
+packet radio networking!
+
+
 Requirements
 ------------
 
@@ -85,8 +92,48 @@ with an existing route may require administrator privileges or manual adjustment
 You can make pytap3 a drop-in replacement for pytap2 by just importing it like this:
  ``import pytap3 as pytap2``
 
+``kisstun`` command
+-------------------
+
+Installing ``pytap3`` provides the ``kisstun`` command. It creates and
+configures a TUN interface from an IPv4 address and prefix, then bridges IP
+packets between that interface and a TCP-connected KISS TNC. For example:
+
+.. code:: shell-session
+
+    $ sudo kisstun 10.73.0.1/16
+
+The default TCP KISS endpoint is ``127.0.0.1:8001``; the default KISS hardware
+port is 0 and MTU is 256. Use ``--host``, ``--port``, ``--kiss-port``, and
+``--mtu`` to change these settings. Run ``kisstun --help`` for the full option
+list. Creating the interface and routing its subnet may require root or
+administrator privileges.
+
+The command can also be run as a Python module:
+
+.. code:: shell-session
+
+    $ sudo python3 -m pytap3.kisstun 10.73.0.1/16
+
+Pass ``--direwolf`` to launch ``direwolf`` from ``PATH`` and wait for its TCP
+KISS listener before connecting. Dire Wolf must be configured to listen at the
+selected endpoint (by default ``127.0.0.1:8001``). The child process is
+terminated when ``kisstun`` exits.
+
+Specify a different TCP TNC endpoint, KISS port, or MTU with options:
+
+.. code:: shell-session
+
+    $ sudo kisstun 10.73.0.1/16 --host 192.168.1.10 --port 8001 --kiss-port 2 --mtu 256
+    $ sudo kisstun 10.73.0.1/16 --direwolf
+
 Releases
 --------
+
+3.1.0 - 2026-10-26
+^^^^^^^^^^^^^^^^^^
+
+- Added the ``kisstun`` utility for my fellow amateur radio operators.
 
 3.0.2 - 2026-10-26
 ^^^^^^^^^^^^^^^^^^
