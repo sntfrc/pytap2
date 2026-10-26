@@ -88,6 +88,11 @@ You can make pytap3 a drop-in replacement for pytap2 by just importing it like t
 Releases
 --------
 
+3.0.1 - 2026-10-26
+^^^^^^^^^^^^^^^^^^
+
+- Bugfix: use interface routing on macOS, like the test was expecting.
+
 3.0.0 - 2024-06-05
 ^^^^^^^^^^^^^^^^^^
 
