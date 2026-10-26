@@ -372,7 +372,8 @@ class TapDevice:
         raise ValueError(f"No other usable address in {network} for utun peer")
 
     def ifconfig(self, ip: Optional[str] = None, netmask: Optional[str] = None,
-                 mtu: Optional[int] = None, peer: Optional[str] = None) -> None:
+                 mtu: Optional[int] = None, peer: Optional[str] = None,
+                 address: Optional[str] = None) -> None:
         """Configure interface addressing and/or MTU.
 
         For macOS, ``peer`` defaults to the first usable address in the given
@@ -380,6 +381,10 @@ class TapDevice:
         destination address. It is a deterministic placeholder, not a probe of
         address use on the network.
         """
+        if address is not None:
+          if ip is not None and ip != address:
+            raise ValueError("pass either ip or address, not conflicting values")
+          ip = address
         target_mtu = mtu if mtu is not None else self.mtu
         if self._platform == "Linux":
             args = ["ifconfig", self.name]
