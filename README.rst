@@ -1,4 +1,4 @@
-``pytap2`` - Cross-platform TUN interface for Python
+``pytap3`` - Cross-platform TUN interface for Python
 ====================================================
 
 This is a cross-platform fork of the original
@@ -37,13 +37,13 @@ privileges.
 Installation
 ------------
 
-You can install, upgrade, and uninstall ``pytap2`` with these commands:
+You can install, upgrade, and uninstall ``pytap3`` with these commands:
 
 .. code:: shell-session
 
-    $ pip install pytap2
-    $ pip install --upgrade pytap2
-    $ pip uninstall pytap2
+    $ pip install pytap3
+    $ pip install --upgrade pytap3
+    $ pip uninstall pytap3
 
 Usage
 -----
@@ -53,7 +53,7 @@ end of the ``with`` block.
 
 .. code:: python
 
-    from pytap2 import TapDevice
+    from pytap3 import TapDevice
 
     with TapDevice() as device:
         device.ifconfig(mtu=1300)
@@ -63,7 +63,7 @@ Or manually call ``up()`` and ``close()``.
 
 .. code:: python
 
-    from pytap2 import TapDevice
+    from pytap3 import TapDevice
 
     device = TapDevice()
     device.up()
@@ -77,7 +77,7 @@ to `select() <https://docs.python.org/library/select.html#select.select>`_.
 Releases
 --------
 
-2.4.0 - 2024-06-05
+3.0.0 - 2024-06-05
 ^^^^^^^^^^^^^^^^^^
 
 - Windows, Linux and macOS support!
