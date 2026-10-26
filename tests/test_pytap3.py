@@ -1,5 +1,7 @@
 import errno
 import os
+import socket
+import struct
 import unittest
 from unittest.mock import Mock, call, patch
 
@@ -13,6 +15,16 @@ class TestCase(unittest.TestCase):
 
 @unittest.skipIf(os.name == "nt", "the macOS backend requires fcntl")
 class MacOSBackendTestCase(unittest.TestCase):
+    def test_write_encodes_address_family_in_network_byte_order(self) -> None:
+        backend = _MacOSBackend.__new__(_MacOSBackend)
+        backend.sock = Mock()
+        packet = b"\x45\x00"
+        frame = struct.pack("!I", socket.AF_INET) + packet
+        backend.sock.send.return_value = len(frame)
+
+        self.assertEqual(backend.write(packet), len(packet))
+        backend.sock.send.assert_called_once_with(frame)
+
     @patch("pytap3.fcntl.ioctl")
     @patch("pytap3.socket.socket")
     def test_automatic_name_uses_next_available_unit(

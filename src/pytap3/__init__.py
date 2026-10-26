@@ -195,7 +195,7 @@ class _MacOSBackend:
             family = socket.AF_INET6
         else:
             raise ValueError("utun accepts only IPv4 or IPv6 packets")
-        return max(0, self.sock.send(struct.pack("=I", family) + packet) - 4)
+        return max(0, self.sock.send(struct.pack("!I", family) + packet) - 4)
 
     def fileno(self) -> int:
         return self.sock.fileno()
