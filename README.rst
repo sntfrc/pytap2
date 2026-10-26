@@ -89,6 +89,8 @@ Unreleased
 
 - Support Python 3.12.
 - Automatically try the next available macOS utun interface when a unit is busy.
+- On macOS, ``name`` is a preferred utun interface; check ``device.name`` for the
+  actual assigned interface.
 
 2.3.0 - 2023-04-28
 ^^^^^^^^^^^^^^^^^^

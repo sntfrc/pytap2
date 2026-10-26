@@ -11,6 +11,7 @@ import ctypes
 import ctypes.util
 import errno
 import ipaddress
+import logging
 import os
 import platform
 import socket
@@ -28,6 +29,7 @@ IFF_TAP = 0x0002
 IFF_NO_PI = 0x1000
 _IFNAMSIZ = 16
 _DEFAULT_MTU = 1500
+_LOGGER = logging.getLogger(__name__)
 
 
 class TapDeviceError(OSError):
@@ -93,46 +95,88 @@ class _MacOSBackend:
             raise ValueError("macOS utun supports layer-3 TUN devices only")
         if name and not name.startswith("utun"):
             raise ValueError("macOS interface names must be utunN")
-        unit = 1 if not name else int(name[4:]) + 1
+        requested_unit = None if not name else int(name[4:]) + 1
+        unit = 1 if requested_unit is None else requested_unit
+        retried = False
         while True:
-            sock = socket.socket(
-                getattr(socket, "PF_SYSTEM", 32), socket.SOCK_DGRAM,
-                self._SYSPROTO_CONTROL
-            )
+            interface_name = f"utun{unit - 1}"
+            _LOGGER.debug("Creating macOS utun control socket for %s", interface_name)
+            try:
+                sock = socket.socket(
+                    getattr(socket, "PF_SYSTEM", 32), socket.SOCK_DGRAM,
+                    self._SYSPROTO_CONTROL
+                )
+            except OSError as exc:
+                raise TapDeviceError(
+                    exc.errno,
+                    f"Creating control socket for {interface_name} failed: "
+                    f"{exc.strerror or exc}",
+                ) from exc
             try:
                 info = bytearray(self._CTL_INFO_SIZE + 4)
                 info[4:4 + len(self._UTUN_CONTROL_NAME)] = self._UTUN_CONTROL_NAME
                 fcntl.ioctl(sock.fileno(), self._CTLIOCGINFO, info, True)
                 ctl_id = struct.unpack_from("=I", info)[0]
+            except OSError as exc:
+                sock.close()
+                raise TapDeviceError(
+                    exc.errno,
+                    f"Looking up the utun kernel control for {interface_name} "
+                    f"failed: {exc.strerror or exc}",
+                ) from exc
             except Exception:
                 sock.close()
                 raise
             try:
+                _LOGGER.debug(
+                    "Connecting macOS utun control socket to unit %d (%s)",
+                    unit, interface_name,
+                )
                 sock.connect((ctl_id, unit))
             except OSError as exc:
                 sock.close()
-                if name is None and exc.errno == errno.EBUSY:
+                if exc.errno == errno.EBUSY:
+                    _LOGGER.debug(
+                        "%s is busy; trying the next macOS utun unit",
+                        interface_name,
+                    )
                     unit += 1
+                    retried = True
                     continue
-                raise
+                raise TapDeviceError(
+                    exc.errno,
+                    f"Connecting to macOS utun unit {unit} ({interface_name}) "
+                    f"failed: {exc.strerror or exc}",
+                ) from exc
             except Exception:
                 sock.close()
                 raise
             self.sock = sock
             break
 
+        _LOGGER.debug(
+            "Reading assigned interface name for macOS utun unit %d", unit
+        )
         try:
             self.name = self.sock.getsockopt(
                 self._SYSPROTO_CONTROL, self._UTUN_OPT_IFNAME, 64
             ).split(b"\0", 1)[0].decode()
-            if name and name != self.name:
-                raise TapDeviceError(
-                    f"Requested {name}, but macOS assigned {self.name}; "
-                    "utun names are assigned by the kernel"
-                )
+        except OSError as exc:
+            self.sock.close()
+            raise TapDeviceError(
+                exc.errno,
+                f"Reading the assigned name for macOS utun unit {unit} failed: "
+                f"{exc.strerror or exc}",
+            ) from exc
         except Exception:
             self.sock.close()
             raise
+        if name and not retried and name != self.name:
+            self.sock.close()
+            raise TapDeviceError(
+                f"Requested {name}, but macOS assigned {self.name}; "
+                "utun names are assigned by the kernel"
+            )
 
     def read(self, size: int) -> bytes:
         packet = self.sock.recv(size + 4)
@@ -311,7 +355,8 @@ class TapDevice:
     """Create and use a packet-oriented TUN device.
 
     Args:
-        name: Requested interface name. macOS assigns ``utunN`` names itself.
+        name: Preferred interface name. macOS assigns ``utunN`` names itself
+            and tries a later unit if the requested unit is busy.
         mode: ``IFF_TUN`` (default) or Linux-only ``IFF_TAP``.
         no_pi: Linux-only; omit the two-byte packet-information header.
         mtu: MTU to set when the interface is brought up.
