@@ -1,5 +1,5 @@
-``pytap3`` - Cross-platform TUN interface for Python
-====================================================
+``pytap3`` - Cross-platform tunnel interface for Python
+=======================================================
 
 This is a cross-platform fork of the original
 `johnthagen/pytap2 <https://github.com/johnthagen/pytap2>`_. It provides a
