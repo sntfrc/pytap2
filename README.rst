@@ -88,6 +88,7 @@ Unreleased
 ^^^^^^^^^^
 
 - Support Python 3.12.
+- Automatically try the next available macOS utun interface when a unit is busy.
 
 2.3.0 - 2023-04-28
 ^^^^^^^^^^^^^^^^^^

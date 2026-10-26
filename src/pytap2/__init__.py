@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import ctypes
 import ctypes.util
+import errno
 import ipaddress
 import os
 import platform
@@ -92,18 +93,35 @@ class _MacOSBackend:
             raise ValueError("macOS utun supports layer-3 TUN devices only")
         if name and not name.startswith("utun"):
             raise ValueError("macOS interface names must be utunN")
-        # For utun, sc_unit=0 asks the kernel to choose a free unit.
-        self.sock = socket.socket(
-            getattr(socket, "PF_SYSTEM", 32), socket.SOCK_DGRAM,
-            self._SYSPROTO_CONTROL
-        )
+        unit = 1 if not name else int(name[4:]) + 1
+        while True:
+            sock = socket.socket(
+                getattr(socket, "PF_SYSTEM", 32), socket.SOCK_DGRAM,
+                self._SYSPROTO_CONTROL
+            )
+            try:
+                info = bytearray(self._CTL_INFO_SIZE + 4)
+                info[4:4 + len(self._UTUN_CONTROL_NAME)] = self._UTUN_CONTROL_NAME
+                fcntl.ioctl(sock.fileno(), self._CTLIOCGINFO, info, True)
+                ctl_id = struct.unpack_from("=I", info)[0]
+            except Exception:
+                sock.close()
+                raise
+            try:
+                sock.connect((ctl_id, unit))
+            except OSError as exc:
+                sock.close()
+                if name is None and exc.errno == errno.EBUSY:
+                    unit += 1
+                    continue
+                raise
+            except Exception:
+                sock.close()
+                raise
+            self.sock = sock
+            break
+
         try:
-            info = bytearray(self._CTL_INFO_SIZE + 4)
-            info[4:4 + len(self._UTUN_CONTROL_NAME)] = self._UTUN_CONTROL_NAME
-            fcntl.ioctl(self.sock.fileno(), self._CTLIOCGINFO, info, True)
-            ctl_id = struct.unpack_from("=I", info)[0]
-            unit = 0 if not name else int(name[4:]) + 1
-            self.sock.connect((ctl_id, unit))
             self.name = self.sock.getsockopt(
                 self._SYSPROTO_CONTROL, self._UTUN_OPT_IFNAME, 64
             ).split(b"\0", 1)[0].decode()
