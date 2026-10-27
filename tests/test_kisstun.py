@@ -65,7 +65,7 @@ class KISSTestCase(unittest.TestCase):
     def test_packet_filter_keeps_unicast_and_broadcast(self) -> None:
         network = ipaddress.ip_network("10.73.0.0/16")
 
-        for destination in ("10.73.1.2", "10.73.255.255", "255.255.255.255"):
+        for destination in ("10.73.1.2", "10.73.255.255"):
             with self.subTest(destination=destination):
                 packet = _ipv4_packet(destination)
                 self.assertTrue(kisstun._is_forwardable_ipv4_packet(packet, network))

@@ -119,11 +119,9 @@ def _is_forwardable_ipv4_packet(
             ):
                 return False
 
-    if (
-        destination == ipaddress.IPv4Address("255.255.255.255")
-        or destination == network.broadcast_address
-    ):
+    if destination == network.broadcast_address:
         return True
+
     return not (
         destination.is_reserved
         or destination.is_loopback

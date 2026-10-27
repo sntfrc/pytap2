@@ -11,7 +11,7 @@ from pytap3_build import PlatformWheel, WintunBuildPy  # noqa: E402
 
 setuptools.setup(
     name="pytap3",
-    version="3.1.0",
+    version="3.1.1",
     description="Cross-platform tunnel interface for Python",
     long_description=open("README.rst").read(),
     keywords=["pytap", "tun", "tap", "networking"],

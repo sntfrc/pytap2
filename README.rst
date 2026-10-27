@@ -144,6 +144,11 @@ Specify a different TCP TNC endpoint, KISS port, or MTU with options:
 Releases
 --------
 
+3.1.1 - 2026-10-27
+^^^^^^^^^^^^^^^^^^
+
+- Updated the kisstun outgoing packet filter to forward only the network broadcast.
+
 3.1.0 - 2026-10-26
 ^^^^^^^^^^^^^^^^^^
 
