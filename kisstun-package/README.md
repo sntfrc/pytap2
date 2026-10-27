@@ -13,9 +13,9 @@ Installing ``pytap3`` provides the ``kisstun`` command. It creates and
 configures a TUN interface from an IPv4 address and prefix, then bridges IP
 packets between that interface and a TCP-connected KISS TNC. For example:
 
-.. code:: shell-session
-
-    $ sudo kisstun 10.73.0.1/16
+```shell
+$ sudo kisstun 10.73.0.1/16
+```
 
 The default TCP KISS endpoint is ``127.0.0.1:8001``; the default KISS hardware
 port is 0 and MTU is 256. Use ``--host``, ``--port``, ``--kiss-port``, and
@@ -39,9 +39,9 @@ the TCP window size.
 
 The command can also be run as a Python module:
 
-.. code:: shell-session
-
-    $ sudo python3 -m pytap3.kisstun 10.73.0.1/16
+```shell
+$ sudo python3 -m pytap3.kisstun 10.73.0.1/16
+```
 
 Pass ``--direwolf`` to launch ``direwolf`` from ``PATH`` and wait for its TCP
 KISS listener before connecting. Dire Wolf must be configured to listen at the
@@ -50,8 +50,7 @@ terminated when ``kisstun`` exits.
 
 Specify a different TCP TNC endpoint, KISS port, or MTU with options:
 
-.. code:: shell-session
-
-    $ sudo kisstun 10.73.0.1/16 --host 192.168.1.10 --port 8001 --kiss-port 2 --mtu 256
-    $ sudo kisstun 10.73.0.1/16 --direwolf
-
+```shell
+$ sudo kisstun 10.73.0.1/16 --host 192.168.1.10 --port 8001 --kiss-port 2 --mtu 256
+$ sudo kisstun 10.73.0.1/16 --direwolf
+```
