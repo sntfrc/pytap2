@@ -4,13 +4,13 @@ build-backend = "hatchling.build"
 
 [project]
 name = "kisstun"
-version = "3.1.1"
+version = "3.1.2"
 description = "Cross-platform bridge from KISS TNC to IP tunnel device"
 readme = "README.md"
 requires-python = ">=3.8"
 license = "MIT"
 dependencies = [
-    "pytap3==3.1.1",
+    "pytap3==3.1.2",
 ]
 
 [tool.hatch.build.targets.wheel]

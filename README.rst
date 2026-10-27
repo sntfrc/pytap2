@@ -144,6 +144,11 @@ Specify a different TCP TNC endpoint, KISS port, or MTU with options:
 Releases
 --------
 
+3.1.2 - 2026-10-27
+^^^^^^^^^^^^^^^^^^
+
+- Added a macOS utun alias to allow receiving network broadcast packets.
+
 3.1.1 - 2026-10-27
 ^^^^^^^^^^^^^^^^^^
 
