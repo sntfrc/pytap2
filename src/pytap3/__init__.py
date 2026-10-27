@@ -469,6 +469,12 @@ class TapDevice:
                 args.extend(["mtu", str(target_mtu)])
             _run(*args)
             if ip:
+                if network.version == 4:
+                    _run(
+                        "ifconfig", self.name, "alias",
+                        str(network.broadcast_address), "netmask", netmask,
+                        chosen_peer, "up",
+                    )
                 _run("route", "-n", "add", "-net", str(network), "-interface", self.name)
         else:
             if ip:

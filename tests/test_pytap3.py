@@ -97,6 +97,10 @@ class MacOSRouteTestCase(unittest.TestCase):
                     "netmask", "255.255.240.0", "mtu", "1500",
                 ),
                 call(
+                    "ifconfig", "utun3", "alias", "10.0.15.255",
+                    "netmask", "255.255.240.0", "10.0.0.1", "up",
+                ),
+                call(
                     "route", "-n", "add", "-net", "10.0.0.0/20",
                     "-interface", "utun3",
                 ),
